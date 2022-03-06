@@ -1,0 +1,56 @@
+server {
+    listen       8000;
+    listen  [::]:8000;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    # location / {
+    #     root   /usr/share/nginx/html;
+    #     index  index.html index.htm;
+    # }
+
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    location ~ /\.ht {
+        deny  all;
+    }
+
+    location /health {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET';
+        return 200 'ok';
+    }
+
+    location = /sub/follow {
+        nchan_subscriber;
+        nchan_subscriber_message_id_custom_etag_header taggy;
+
+        nchan_channel_id $FOLLOW_CHANNEL;
+    }
+
+}
+
+server {
+    listen       81;
+    listen  [::]:81;
+    server_name  localhost;
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    location = /pub/follow {
+        nchan_publisher;
+        nchan_message_timeout: 5m;
+        nchan_channel_id $FOLLOW_CHANNEL;
+    }
+}
