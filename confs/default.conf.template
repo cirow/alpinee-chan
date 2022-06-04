@@ -50,7 +50,7 @@ server {
 
     location = /pub/follow {
         nchan_publisher;
-        nchan_message_timeout: 5m;
+        nchan_message_timeout 5m;
         nchan_channel_id $FOLLOW_CHANNEL;
     }
 }
